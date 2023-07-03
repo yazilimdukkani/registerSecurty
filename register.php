@@ -183,11 +183,20 @@ if($sonuc=="true"){
 #xss guvenlik kontrol
 $kullanici=@$_POST['kadi'];
 $posta=@$_POST['eposta'];
+$password=@$_POST['password'];
+
+
 $diziKullanici= array('/(<script>)/','/(<\/script>)/','/(,)/','/(;)/','/(")/','/(alert)/',"/(')/",'/(<)/','/(\$)/','/(\?)/','/(>)/','/( )/'
 ,'/(\{)/','/(\})/','/(\()/','/(\))/');
 
 $diziPosta=array('/(<script>)/','/(<\/script>)/','/(,)/','/(;)/','/(")/','/(alert)/',"/(')/",'/(<)/','/(\$)/','/(\?)/','/(>)/','/(\{)/','/(\})/'
 ,'/(\()/','/(\))/');
+
+$diziPassword=array('/(<script>)/','/(<\/script>)/','/(,)/','/(;)/','/(")/','/(alert)/',"/(')/",'/(<)/','/(\$)/','/(\?)/','/(>)/','/( )/'
+,'/(\{)/','/(\})/','/(\()/','/(\))/');
+
+$password=preg_replace($diziPassword,"c",$password);
+
 
 $kadi= preg_replace($diziKullanici, "b", $kullanici);
 
@@ -244,7 +253,27 @@ $gmail=strstr($eposta,$kutu);
 # @gmail.com kullanılcak
 
 
-if ($ilkAranacak === FALSE  && $hot === FALSE && $etim === FALSE && !$sonKarakter && $ilkKarakter != "."  && !$noktaKarakter && $gmail) {
+#kullanıcı adı enaz6 karakter
+
+$kullaniciEnaz=strlen($kullanici);
+
+#kullanıcı adı enaz6 karakter
+
+
+#email enaz 6 karakter
+$emailEnaz=strlen($posta);
+
+#email enaz 6 karakter
+
+#sifre enaz 6 karakter
+
+$passwordEnaz=strlen($password);
+
+#sifre enaz 6 karakter
+
+
+if ($ilkAranacak === FALSE  && $hot === FALSE && $etim === FALSE && !$sonKarakter && $ilkKarakter != "."  && !$noktaKarakter && $gmail
+&& $kullaniciEnaz >= 6 && $kullaniciEnaz <= 15 && $emailEnaz >= 6 && $emailEnaz <= 60 && $passwordEnaz >= 6 && $passwordEnaz <= 15) {
   # code...
 
 $eski=array('ç','ğ','ı','ö','ş','ü','Ç','Ğ','I','Ö','Ş','Ü','.','_','-','*','/','=','#','!','^','%','&');
@@ -260,12 +289,20 @@ $yeniposta=array('c','g','i','o','s','u','C','G','İ','O','S','U','b','b','b','N
   
   
   $cevirEposta=str_replace($eskiposta,$yeniposta,$eposta);
+
+
+
+  $eskipassword=array('ç','ğ','ı','ö','ş','ü','Ç','Ğ','I','Ö','Ş','Ü',' ','-','_','*','/','=','#','!','^','%','&');
+  $yenipassword=array('c','g','i','o','s','u','C','G','İ','O','S','U','b','b','b','N','N','N','N','N','N','N','N');
+  
+
+  $cevirPassword=str_replace($eskipassword,$yenipassword,$password);
 #xss guvenlik kontrol
 
  
 
 
-  $insert->Register($cevirKadi,md5($_POST['password']),$cevirEposta,$user,$_POST['tc'],$_POST['ad'],$_POST['soyad'],$_POST['yil']);
+  $insert->Register($cevirKadi,md5($cevirPassword),$cevirEposta,$user,$_POST['tc'],$_POST['ad'],$_POST['soyad'],$_POST['yil']);
   
   $ip=$_SERVER['REMOTE_ADDR'];
   $tarih=date("H:i:s Y-m-d ");
@@ -280,7 +317,7 @@ $yeniposta=array('c','g','i','o','s','u','C','G','İ','O','S','U','b','b','b','N
 
 else{
 
-echo "böle bir mail adresi yok";
+echo "Hatalı işlem doğru veriler giriniz";
 
 }
 
